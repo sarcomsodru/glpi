@@ -1,0 +1,45 @@
+version: "3.8"
+
+services:
+#MariaDB Container
+ mariadb:
+  image: mariadb:10.7
+  restart: always
+  container_name: mariadb2
+  hostname: mariadb2
+  ports:
+   - "3306:3306"
+  environment:
+   - MARIADB_ROOT_PASSWORD=password
+   - MARIADB_DATABASE=glpidb
+   - MARIADB_USER=glpi_user
+   - MARIADB_PASSWORD=glpi
+   - TZ=America/Asuncion
+  volumes:
+   - /var/lib/mysql:/var/lib/mysql
+#GLPI Container
+ glpi:
+  image: diouxx/glpi
+  restart: always
+  container_name : glpi2
+  hostname: glpi2
+  ports:
+   - "3838:80"
+  volumes:
+   - /etc/timezone:/etc/timezone:ro
+   - /etc/localtime:/etc/localtime:ro
+   - /var/www/html/glpi/:/var/www/html/glpi
+  environment:
+   - TZ=America/Asuncion
+#Ngnix proxy
+ nginx:
+  image: nginx:latest
+  container_name: webserver
+  restart: unless-stopped
+  ports:
+    - 80:80
+   # - 443:443
+  volumes:
+    - ./conf2/nginx.conf:/etc/nginx/nginx.conf
+    #- ./conf/nginx.conf:/etc/nginx/nginx.conf
+    #- ./ssl/:/ssl/
